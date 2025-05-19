@@ -1,5 +1,5 @@
 /*
-* Customer Lifetime Value (CLV) Estimation Report
+* Customer Lifetime Value (CLV) Estimation Query
 * 
 * Purpose: Calculate estimated Customer Lifetime Value based on transaction history
 * and customer tenure to support customer value analysis and segmentation

@@ -1,5 +1,5 @@
 /*
-* Multi-Product Customer Analysis Report
+* Multi-Product High-Value Customers Analysis
 * 
 * Purpose: Identify customers who have both regular savings and investment accounts
 * with actual deposits to support cross-selling and customer relationship analysis

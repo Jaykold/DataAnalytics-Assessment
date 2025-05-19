@@ -1,5 +1,5 @@
 /*
-* Account Inactivity Alert Report
+* Account Inactivity Alert Query
 * 
 * Purpose: Identify accounts with no inflow transactions in the past year
 * to support ops team's dormant account monitoring

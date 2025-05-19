@@ -1,5 +1,6 @@
 /*
 * Transaction Frequency Analysis Query 
+*
 * Purpose: Analyze and segment customers based on their transaction frequency
 * to support finance team's customer segmentation initiative
 
