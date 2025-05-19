@@ -1,3 +1,12 @@
+/*
+* Customer Lifetime Value (CLV) Estimation Report
+* 
+* Purpose: Calculate estimated Customer Lifetime Value based on transaction history
+* and customer tenure to support customer value analysis and segmentation
+*
+* This SQL query is designed for MySQL, as the database dump file is formatted for MySQL.
+*/
+
 WITH latest_transaction_date AS (
     -- Get the most recent transaction date once to avoid recalculating
     SELECT MAX(transaction_date) AS max_date

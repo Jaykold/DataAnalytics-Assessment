@@ -18,6 +18,33 @@
 - Investment plan is funded when plans_plan.amount > 0
 - Savings plan is funded when savings_savingsaccount.confirmed_amount > 0
 
+#### Challenges:
+
+- Managing the complex JOIN conditions while maintaining data integrity
+- Solution: Used a combination of JOIN and LEFT JOIN with appropriate WHERE conditions to ensure only funded accounts are considered:
+
+```
+FROM
+    adashi_staging.users_customuser u
+JOIN
+    adashi_staging.plans_plan p ON u.id = p.owner_id
+LEFT JOIN
+    adashi_staging.savings_savingsaccount s ON p.id = s.plan_id
+WHERE
+    (p.is_a_fund = 1 AND p.amount > 0) OR
+    (p.is_regular_savings = 1 AND s.confirmed_amount > 0)
+```
+
+- The business requirement was to identify customers with multiple active products, but simply checking product flags wasn't sufficient - the products needed to be funded.
+- Solution: Used the HAVING clause with conditional counting to ensure customers had both product types with actual deposits:
+
+```
+HAVING 
+    COUNT(DISTINCT CASE WHEN p.is_regular_savings = 1 AND s.confirmed_amount > 0 THEN p.id END) > 0
+    AND 
+    COUNT(DISTINCT CASE WHEN p.is_a_fund = 1 AND p.amount > 0 THEN p.id END) > 0
+```
+
 ### Question 2:
 
 #### Explanation:
@@ -40,6 +67,19 @@
 - Calculates the average transactions per month within each category
 - Rounds to one decimal place for readability
 - Orders results by frequency category (high to low)
+
+#### Challenges:
+
+- Handling varying transaction periods across customers was complex
+- Solution: Used a derived table in CTE 1 with YEAR and MONTH grouping to ensure accurate monthly averages regardless of when customers started transacting:
+```
+FROM (
+        SELECT s.owner_id, YEAR(s.transaction_date) AS year, MONTH(s.transaction_date) AS month, COUNT(*) AS transaction_count
+        FROM adashi_staging.savings_savingsaccount s
+        WHERE s.transaction_status = 'success'  -- Only count successful transactions
+        GROUP BY s.owner_id, year, month
+    ) AS monthly_transactions
+```
 
 ### Question 3:
 
@@ -66,8 +106,26 @@
 
 #### Challenges:
 
-- More information about the columns would have made it easier to navigate the questions for instance (What is_deleted column means and   whether it affects active transactions)
+- The original query used a hardcoded current date, which would require manual updates and wouldn't reflect the most recent data available.
+Solution:
+- Created a dedicated CTE to dynamically determine the latest transaction date
 
+```
+WITH latest_transaction_date AS (
+    SELECT MAX(transaction_date) AS max_date
+    FROM savings_savingsaccount
+    WHERE transaction_status = 'success'
+)
+```
+- Managing different account types (savings vs investment) in a single query
+- Solution: Used CASE statement to determine account type based on plan flags (is_regular_savings and is_a_fund)
+
+```
+CASE 
+    WHEN p.is_regular_savings = 1 THEN 'Savings'
+    WHEN p.is_a_fund = 1 THEN 'Investment'
+    END AS type
+```
 ### Question 4:
 
 #### Explanation:
